@@ -53,6 +53,7 @@ class SettingTemp(Module):
             count_list[row.set_temperature - self.min_temp] += 1
         self.virtical_axis = [int((_ / sum(count_list) * 100)) for _ in count_list]
 
+    # 以下データ解析用メソッド
     def _find_frequent_set_temperature(self):
         '''
         データ解析部分
@@ -159,6 +160,34 @@ class ReduceUsage(Module):
 
         self.virtical_axis = ret_list
 
+    # 以下データ解析用メソッド
+    @staticmethod
+    def _make_ranking_index(vlist):
+        '''
+        指定の配列におけるランキングをインデックス基準に返す
+        >>> find_top1_weekday([19, 21, 11, 38, 21, 13, 28])
+        [3, 6, 1, 4, 0, 5, 2]
+        '''
+        dic = {}
+        for i, v in enumerate(vlist):
+            dic.setdefault(v, []).append(i)
+        ret = []
+        for k, v in reversed(sorted(dic.items())):
+            while v:
+                ret.append(v.pop(0))
+        return ret
+
+    @staticmethod
+    def convert_num_to_weekday(num):
+        '''
+        曜日インデックスを日本語に変換するメソッド
+        >>> convert_num_to_weekday(2)
+        '火'
+        '''
+        convert_list = ["日", "月", "火", "水", "木", "金", "土"]
+        return convert_list[num]
+
+
 
 class ChangeUsage(Module):
     '''
@@ -222,12 +251,4 @@ class ChangeUsage(Module):
 
 
 if __name__ == "__main__":
-    # SettingTemp
-    # Prepare input data
-
-    # ChangeUsage
-    # Prepare input data
-
-    # ReduceUsage
-    # Prepare input data
     pass
