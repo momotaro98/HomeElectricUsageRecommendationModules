@@ -1,9 +1,8 @@
 # coding: utf-8
 
 import unittest
-from home_electric_usage_recommendation_modules import (SettingTemp,
-                                                        ReduceUsage,
-                                                        ChangeUsage)
+
+from home_electric_usage_recommendation_modules.modules import SettingTemp
 
 
 class RowTestDataSet:
@@ -38,3 +37,12 @@ class ChangeUsageModuleTestCase(unittest.TestCase):
     def setUp(self):
         # prepare TestCase
         pass
+
+
+if __name__ == "__main__":
+    import csv
+    with open('test.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            print(row['timestamp'], "|", row['set_temperature'])
+            # print(row['timestamp'])

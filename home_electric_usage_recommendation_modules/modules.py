@@ -4,8 +4,7 @@
 レコメンド内容におけるモジュール
 '''
 
-import utils
-
+import home_electric_usage_recommendation_modules.utils
 
 class Module:
     '''

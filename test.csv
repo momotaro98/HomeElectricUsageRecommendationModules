@@ -1,4 +1,4 @@
-timestamp, on_off, operating, set_temperature, wind, temperature, pressure, humidity, IP_Address
+timestamp,on_off, operating,set_temperature,wind,temperature,pressure,humidity,IP_Address
 2016-08-07 00:43:53,off,cool,25,auto,28.3369051246,1003.57083873,42.6140724352,192.168.11.15
 2016-08-07 06:45:21,on,cool,25,auto,29.0999844104,1004.51919843,52.8494980484,192.168.11.15
 2016-08-07 06:46:04,on,cool,24,auto,29.1819261944,1004.48026381,52.6772748905,192.168.11.15
