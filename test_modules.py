@@ -1,11 +1,12 @@
 # coding: utf-8
 
 import unittest
+import csv
 
 from home_electric_usage_recommendation_modules.modules import SettingTemp
 
 
-class RowTestDataSet:
+class RowData:
     '''
     入力データの型
     ------------------------------------
@@ -17,14 +18,28 @@ class RowTestDataSet:
     ------------------------------------
     ...
     '''
-    def __init__(self):
-        pass
+    def __init__(self, timestamp, set_temperature=25, on_off='on'):
+        self.timestamp = timestamp
+        self.set_temperature = set_temperature
+        self.on_off = on_off
+
+
+def make_input_list():
+    ret_list = []
+    with open('test.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            ret_list.append(RowData(row['timestamp'],
+                                      set_temperature=row['set_temperature'],
+                                      on_off=row['on_off'],
+                                      ))
+    return ret_list
 
 
 class SettingTempModuleTestCase(unittest.TestCase):
     def setUp(self):
         # prepare TestCase
-        pass
+        input_list = make_input_list()
 
 
 class ReduceUsageModuleTestCase(unittest.TestCase):
@@ -40,9 +55,6 @@ class ChangeUsageModuleTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    import csv
-    with open('test.csv') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            print(row['timestamp'], "|", row['set_temperature'])
-            # print(row['timestamp'])
+    input_list = make_input_list()
+    for row in input_list:
+        print(row.timestamp, row.on_off, row.set_temperature)
