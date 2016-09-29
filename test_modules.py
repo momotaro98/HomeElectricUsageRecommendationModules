@@ -2,59 +2,102 @@
 
 import unittest
 import csv
+from datetime import datetime as dt
 
 from home_electric_usage_recommendation_modules.modules import SettingTemp
 
 
 class RowData:
     '''
-    入力データの型
-    ------------------------------------
-    timestamp | set_temperature | on_off
-    ====================================
-    2016-08-01 11:20:35 | 25 | on
-    ------------------------------------
-    2016-08-01 17:43:26 | 25 | off
-    ------------------------------------
+    想定しているデータカラム
+    --------------------------------------------------------------------------------------------
+    timestamp,on_off,operating,set_temperature,wind,temperature,pressure,humidity,IP_Address
+    ============================================================================================
+    2016-08-22 07:53:16,on,cool,25,auto,28.6441845969,998.101116478,64.0657707517,192.168.11.15
+    --------------------------------------------------------------------------------------------
+    2016-08-22 08:44:08,off,cool,25,auto,27.9784137312,997.686977325,55.3711607947,192.168.11.15
+    --------------------------------------------------------------------------------------------
     ...
     '''
-    def __init__(self, timestamp, set_temperature=25, on_off='on'):
-        self.timestamp = timestamp
-        self.set_temperature = set_temperature
-        self.on_off = on_off
-
-
-def make_input_list():
-    ret_list = []
-    with open('test.csv') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            ret_list.append(RowData(row['timestamp'],
-                                      set_temperature=row['set_temperature'],
-                                      on_off=row['on_off'],
-                                      ))
-    return ret_list
+    def __init__(self, timestamp, on_off=None, operating=None,
+                 set_temperature=None, wind=None,
+                 temperature=None, pressure=None, humidity=None,
+                 IP_Address=None):
+        self.timestamp = dt.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+        self.on_off = str(on_off) if on_off else on_off
+        self.operating = str(operating) if operating else operating
+        self.set_temperature = int(set_temperature)\
+            if set_temperature else set_temperature
+        self.wind = str(wind) if wind else wind
+        self.temperature = float(temperature) if temperature else wind
+        self.pressure = float(pressure) if pressure else pressure
+        self.humidity = float(humidity) if humidity else humidity
+        self.IP_Address = str(IP_Address) if IP_Address else IP_Address
 
 
 class SettingTempModuleTestCase(unittest.TestCase):
     def setUp(self):
         # prepare TestCase
-        input_list = make_input_list()
+        with open('test.csv') as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.input_rows = []
+            for row in reader:
+                self.input_rows.append(\
+                    RowData(timestamp=row['timestamp'],
+                            set_temperature=row['set_temperature']))
+
+    def test_find_frequest_set_temperature(self):
+        '''
+        _find_frequent_set_temperature()メソッドをテスト
+        '''
+        st = SettingTemp(self.input_rows)
+        frequent_set_temp = st._find_frequent_set_temperature()
+        self.assertEqual(frequent_set_temp, 25)
+
+    def test_show_recommend_set_temperature(self):
+        '''
+        _show_recommend_set_temperature()メソッドをテスト
+        '''
+        st = SettingTemp(self.input_rows)
+        recommend_set_temp = st._show_recommend_set_temperature()
+        self.assertEqual(recommend_set_temp, 27)
 
 
 class ReduceUsageModuleTestCase(unittest.TestCase):
     def setUp(self):
         # prepare TestCase
-        pass
+        with open('test.csv') as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.input_rows = []
+            for row in reader:
+                self.input_rows.append(\
+                    RowData(timestamp=row['timestamp'],
+                            on_off=row['on_off']))
 
 
 class ChangeUsageModuleTestCase(unittest.TestCase):
     def setUp(self):
         # prepare TestCase
-        pass
+        with open('test.csv') as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.input_rows = []
+            for row in reader:
+                self.input_rows.append(\
+                    RowData(timestamp=row['timestamp'],
+                            on_off=row['on_off']))
 
 
 if __name__ == "__main__":
-    input_list = make_input_list()
-    for row in input_list:
-        print(row.timestamp, row.on_off, row.set_temperature)
+    '''
+    with open('test.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        input_rows = []
+        for row in reader:
+            input_rows.append(\
+                RowData(timestamp=row['timestamp'],
+                        set_temperature=row['set_temperature']))
+
+    for row in input_rows:
+        print("row.set_temperature: ", row.set_temperature)
+    '''
+    pass

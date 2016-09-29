@@ -6,17 +6,23 @@
 
 import home_electric_usage_recommendation_modules.utils
 
+
 class Module:
     '''
     処理の流れ
     入力データ -> 分析数値 -> レコメンド用数値・文章
     '''
-
     def __init__(self, rows_iter):
         '''
         [timestamp, value]のイテレータ rows_iter を受け取る
         '''
         self.rows_iter = rows_iter
+
+    def _set_horizontal_axis_values(self):
+        '''
+        横軸を生成するメソッド
+        '''
+        self.horizontal_axis = []
 
     def _set_virtical_axis_values(self):
         '''
@@ -44,6 +50,9 @@ class SettingTemp(Module):
     horizontal_axis = [str(_) + "℃" for _ in horizontal_axis_range]
 
     def _set_virtical_axis_values(self):
+        self.virtical_axis = self._make_frequent_list()
+
+    def _make_frequent_list(self):
         """
         各設定温度の使用頻度のリストを返す 単位は%
         # Return Example
@@ -52,15 +61,15 @@ class SettingTemp(Module):
         count_list = [0] * len(self.horizontal_axis_range)
         for row in self.rows_iter:
             count_list[row.set_temperature - self.min_temp] += 1
-        self.virtical_axis = [int((_ / sum(count_list) * 100)) for _ in count_list]
+        return [int((_ / sum(count_list) * 100)) for _ in count_list]
 
-    # 以下アプリケーションメソッド
     def _find_frequent_set_temperature(self):
         '''
         データ解析部分
         1番頻繁に利用していた設定温度を返すメソッド
         '''
-        return self.virtical_axis.index(max(self.virtical_axis)) + self.min_temp
+        frequent_list = self._make_frequent_list()
+        return frequent_list.index(max(frequent_list)) + self.min_temp
 
     def _show_recommend_set_temperature(self, season="summer"):
         '''
@@ -71,6 +80,8 @@ class SettingTemp(Module):
         # TODO: 現在は推奨設定温度を頻繁利用温度から±2℃にしているので
         # プラスマイナスどのくらいが良いのかを詰めたものを
         # このモジュールにおけるデータ解析部分とする
+
+        self._set_virtical_axis_values()
 
         frequent_set_temp = self._find_frequent_set_temperature()
         if season == "summer":
@@ -103,7 +114,14 @@ class ReduceUsage(Module):
 
     '''
 
-    def _set_horizontal_axis_week_values(self):
+    def _set_horizontal_axis_values(self, duration="weekly"):
+        if duration == "weekly":
+            self.horizontal_axis = self._make_horizontal_axis_weekly_values()
+        if duration == "monthly":
+            # self.horizontal_axis =
+            pass
+
+    def _make_horizontal_axis_weekly_values(self):
         """
         # 日付の横軸ラベルを返す
         # Return Example
@@ -117,13 +135,16 @@ class ReduceUsage(Module):
                 format(dt.year, month=dt.month, day=dt.day)
             ret_list.insert(0, insert_text)
             dt = utils.back_1day_ago(dt)
-        self.horizontal_axis = ret_list
+        return ret_list
 
     def _set_virtical_axis_values(self, duration="weekly"):
         if duration == "weekly":
-            self._set_virtical_axis_weekly_values()
+            self.virtical_axis = self._make_virtical_axis_weekly_values()
+        if duration == "monthly":
+            # self.horizontal_axis =
+            pass
 
-    def _set_virtical_axis_weekly_values(self):
+    def _make_virtical_axis_weekly_values(self):
         """
         # 1週間分の各日におけるエアコン総稼働時間のリストを返す 単位はHour
         # Return Example
@@ -159,7 +180,7 @@ class ReduceUsage(Module):
             ret_list[index] += utils.make_delta_hour(on_timestamp,
                                                      days_last_timestamp)
 
-        self.virtical_axis = ret_list
+        return ret_list
 
     # 以下アプリケーションメソッド
     def find_the_rank_weekday(self, rank=1):
