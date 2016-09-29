@@ -4,8 +4,9 @@
 レコメンド内容におけるモジュール
 '''
 
-import home_electric_usage_recommendation_modules.utils
+from datetime import datetime
 
+from . import utils
 
 class Module:
     '''
@@ -128,11 +129,13 @@ class ReduceUsage(Module):
         # ["2016-08-14", "2016-08-15", "2016-08-16", "2016-08-17",
            "2016-08-18", "2016-08-19", "2016-08-20"]
         """
+        dt = datetime(2016, 4, 1)
+        for row in self.rows_iter:
+            dt = row.timestamp
         ret_list = []
-        dt = self.top_datetime
         for _ in range(7):
-            insert_text = "{year}-{month}-{day}".\
-                format(dt.year, month=dt.month, day=dt.day)
+            insert_text = "{year}-{month:0>2}-{day:0>2}".\
+                format(year=dt.year, month=dt.month, day=dt.day)
             ret_list.insert(0, insert_text)
             dt = utils.back_1day_ago(dt)
         return ret_list
@@ -183,12 +186,14 @@ class ReduceUsage(Module):
         return ret_list
 
     # 以下アプリケーションメソッド
-    def find_the_rank_weekday(self, rank=1):
+    def find_the_rank_weekday(self, rank=1, lang='ja'):
         '''
         指定のランクの曜日を返す
         '''
-        weekday_rank_list = utils.make_ranking_index(self.virtical_axis)
-        return utils.convert_num_to_weekday(weekday_rank_list[rank-1])
+        virtical_axis = self._make_virtical_axis_weekly_values()
+        weekday_rank_list = utils.make_ranking_index(virtical_axis)
+        return utils.convert_num_to_weekday(\
+            weekday_rank_list[rank-1], lang=lang)
 
 
 class ChangeUsage(Module):
@@ -209,11 +214,14 @@ class ChangeUsage(Module):
     horizontal_axis = [str(_) + ":00" for _ in range(24)]
 
     def _set_virtical_axis_values(self):
+        self.virtical_axis = self._make_hourly_usage_frequent_list()
+
+    def _make_hourly_usage_frequent_list(self):
         """
         1週間分における時間当たりの使用率のリストを返す 単位は%
         # Return Example
-        return [90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50,
-                90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 12, 50]
+        return [90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 
+                90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2]
         """
         count_list = [0] * len(self.horizontal_axis)
         on_operationg_flag = False
@@ -242,16 +250,12 @@ class ChangeUsage(Module):
             for i in range(on_timestamp.hour, 24):
                 count_list[i] += 1
 
-        self.virtical_axis = [int(((_ / 7) * 100)) for _ in count_list]
+        return [int(((_ / 7) * 100)) for _ in count_list]
 
-    # 以下アプリケーションメソッド
-    def find_a_certain_hour_value(self):
+    def find_a_certain_hour_value(self, index=14):
         """
-        14時台での利用率を返すメソッド
+        ある時台の利用率を返すメソッド
+        デフォルトで14時台
         """
-        a_certain_hour_index = 14  # 14:00での利用率が欲しい
-        return self.virtical_axis[14]
-
-
-if __name__ == "__main__":
-    pass
+        virtical_axis = self._make_hourly_usage_frequent_list()
+        return virtical_axis[index]
