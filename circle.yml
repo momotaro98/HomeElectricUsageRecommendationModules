@@ -6,4 +6,4 @@ machine:
 
 test:
   override:
-	- py.test tests home_electric_usage_recommendation_modules
+    - py.test tests home_electric_usage_recommendation_modules
