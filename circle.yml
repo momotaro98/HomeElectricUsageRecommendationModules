@@ -1,0 +1,9 @@
+machine:
+  timezone:
+    Asia/Tokyo
+  python:
+    version: 3.4.3
+
+test:
+  override:
+	- py.test tests home_electric_usage_recommendation_modules
