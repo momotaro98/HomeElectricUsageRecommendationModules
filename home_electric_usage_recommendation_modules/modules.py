@@ -227,7 +227,7 @@ class ReduceUsage(Module):
         '''
         virtical_axis = self._make_virtical_axis_weekly_values()
         weekday_rank_list = utils.make_ranking_index(virtical_axis)
-        return utils.convert_num_to_weekday(\
+        return utils.convert_num_to_weekday(
             weekday_rank_list[rank-1], lang=lang)
 
     # 以下出力メソッド
