@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 def make_ranking_index(vlist):
     '''
     指定の配列におけるランキングをインデックス基準に返す
-    >>> find_top1_weekday([19, 21, 11, 38, 21, 13, 28])
+    >>> make_ranking_index([19, 21, 11, 38, 21, 13, 28])
     [3, 6, 1, 4, 0, 5, 2]
     '''
     dic = {}
@@ -27,7 +27,7 @@ def convert_num_to_weekday(num, lang="ja"):
     >>> convert_num_to_weekday(2, 'en')
     'Tue'
     '''
-    convert_dict = {\
+    convert_dict = {
         "ja": ["日", "月", "火", "水", "木", "金", "土"],
         "en": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
     return convert_dict[lang][num]

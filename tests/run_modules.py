@@ -4,7 +4,7 @@ import csv
 
 from home_electric_usage_recommendation_modules \
     import (SettingTemp, ReduceUsage, ChangeUsage)
-from test_modules import RowData
+from tests.test_modules import RowData
 
 
 def get_input_rows_list():
@@ -12,7 +12,7 @@ def get_input_rows_list():
     with open('test.csv') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            input_rows.append(\
+            input_rows.append(
                 RowData(timestamp=row['timestamp'],
                         set_temperature=row['set_temperature'],
                         on_off=row['on_off']))

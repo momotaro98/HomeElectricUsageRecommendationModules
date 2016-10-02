@@ -7,16 +7,14 @@ from datetime import datetime as dt
 from home_electric_usage_recommendation_modules \
     import (SettingTemp, ReduceUsage, ChangeUsage)
 
+CSVFILE_PATH = "tests/test.csv"
+
 
 class RowData:
     '''
     想定しているデータカラム
     --------------------------------------------------------------------------------------------
     timestamp,on_off,operating,set_temperature,wind,temperature,pressure,humidity,IP_Address
-    ============================================================================================
-    2016-08-22 07:53:16,on,cool,25,auto,28.6441845969,998.101116478,64.0657707517,192.168.11.15
-    --------------------------------------------------------------------------------------------
-    2016-08-22 08:44:08,off,cool,25,auto,27.9784137312,997.686977325,55.3711607947,192.168.11.15
     --------------------------------------------------------------------------------------------
     ...
     '''
@@ -42,11 +40,11 @@ class SettingTempModuleTestCase(unittest.TestCase):
         # prepare TestCase
         input_rowsの中にRowData型を入れていく
         '''
-        with open('test.csv') as csvfile:
+        with open(CSVFILE_PATH) as csvfile:
             reader = csv.DictReader(csvfile)
             self.input_rows = []
             for row in reader:
-                self.input_rows.append(\
+                self.input_rows.append(
                     RowData(timestamp=row['timestamp'],
                             set_temperature=row['set_temperature']))
 
@@ -70,11 +68,11 @@ class SettingTempModuleTestCase(unittest.TestCase):
 class ReduceUsageModuleTestCase(unittest.TestCase):
     def setUp(self):
         # prepare TestCase
-        with open('test.csv') as csvfile:
+        with open(CSVFILE_PATH) as csvfile:
             reader = csv.DictReader(csvfile)
             self.input_rows = []
             for row in reader:
-                self.input_rows.append(\
+                self.input_rows.append(
                     RowData(timestamp=row['timestamp'],
                             on_off=row['on_off']))
 
@@ -112,11 +110,11 @@ class ReduceUsageModuleTestCase(unittest.TestCase):
 class ChangeUsageModuleTestCase(unittest.TestCase):
     def setUp(self):
         # prepare TestCase
-        with open('test.csv') as csvfile:
+        with open(CSVFILE_PATH) as csvfile:
             reader = csv.DictReader(csvfile)
             self.input_rows = []
             for row in reader:
-                self.input_rows.append(\
+                self.input_rows.append(
                     RowData(timestamp=row['timestamp'],
                             on_off=row['on_off']))
 
@@ -126,7 +124,7 @@ class ChangeUsageModuleTestCase(unittest.TestCase):
         '''
         cu = ChangeUsage(self.input_rows)
         ret_list = cu._make_hourly_usage_frequent_list()
-        self.assertEqual(\
+        self.assertEqual(
             ret_list, [142, 28, 0, 0, 0, 0, 14, 114, 114,
                        42, 28, 28, 57, 42, 42, 57, 71, 157,
                        142, 142, 142, 142, 142, 142])
