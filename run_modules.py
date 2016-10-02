@@ -2,7 +2,7 @@
 
 import csv
 
-from home_electric_usage_recommendation_modules.modules\
+from home_electric_usage_recommendation_modules \
     import (SettingTemp, ReduceUsage, ChangeUsage)
 from test_modules import RowData
 
