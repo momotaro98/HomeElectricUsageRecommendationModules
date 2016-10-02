@@ -52,10 +52,10 @@ class SettingTempModuleTestCase(unittest.TestCase):
 
     def test_find_frequest_set_temperature(self):
         '''
-        _find_frequent_set_temperature()メソッドをテスト
+        find_frequent_set_temperature()メソッドをテスト
         '''
         st = SettingTemp(self.input_rows)
-        frequent_set_temp = st._find_frequent_set_temperature()
+        frequent_set_temp = st.find_frequent_set_temperature()
         self.assertEqual(frequent_set_temp, 25)
 
     def test_show_recommend_set_temperature(self):

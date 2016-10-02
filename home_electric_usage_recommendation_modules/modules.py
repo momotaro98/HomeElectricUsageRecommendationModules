@@ -11,6 +11,8 @@ class Module:
     処理の流れ
     入力データ -> 分析数値 -> レコメンド用数値・文章
     '''
+    module_name = "Module"
+
     def __init__(self, rows_iter):
         '''
         [timestamp, value]のイテレータ rows_iter を受け取る
@@ -49,7 +51,9 @@ class Module:
         elapsed_time = time.time() - start
 
         print_text = "elapsed_time: {0} [sec]".format(elapsed_time)
+        print(self.module_name)
         print(print_text)
+        print("=" * 50)
 
 
 class SettingTemp(Module):
@@ -65,6 +69,7 @@ class SettingTemp(Module):
     * レコメンド用設定温度 <- これを示すことにおいては難しい機械学習は必要なさそう...
 
     '''
+    module_name = "SettingTemp"
     min_temp = 18
     max_temp = 30
     horizontal_axis_range = range(min_temp, max_temp + 1)
@@ -104,7 +109,7 @@ class SettingTemp(Module):
 
         self._set_virtical_axis_values()
 
-        frequent_set_temp = self._find_frequent_set_temperature()
+        frequent_set_temp = self.find_frequent_set_temperature()
         if season == "summer":
             if 18 <= frequent_set_temp <= 28:
                 return min(frequent_set_temp + 2, 28)
@@ -142,8 +147,8 @@ class ReduceUsage(Module):
     返り値データ形式
     * グラフ用データ
     * レコメンド用 エアコン削減可能曜日・その時間
-
     '''
+    module_name = "ReduceUsage"
 
     def _set_horizontal_axis_values(self, duration="weekly"):
         if duration == "weekly":
@@ -251,6 +256,7 @@ class ChangeUsage(Module):
     * レコメンド用 エアコン削減可能曜日・その時間
 
     '''
+    module_name = "ChangeUsage"
 
     # define specification of this graph
     horizontal_axis = [str(_) + ":00" for _ in range(24)]
