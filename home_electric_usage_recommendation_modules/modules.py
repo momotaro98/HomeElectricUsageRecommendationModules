@@ -1,18 +1,18 @@
 # condig: utf-8
 
-'''
-レコメンド内容におけるモジュール
-'''
-
 from datetime import datetime
+import time
 
 from . import utils
+
 
 class Module:
     '''
     処理の流れ
     入力データ -> 分析数値 -> レコメンド用数値・文章
     '''
+    module_name = "Module"
+
     def __init__(self, rows_iter):
         '''
         [timestamp, value]のイテレータ rows_iter を受け取る
@@ -31,6 +31,30 @@ class Module:
         '''
         self.virtical_axis = []
 
+    def run_output_script(self):
+        '''
+        そのレコメンドモジュールのスクリプト文を吐き出すメソッド
+        '''
+        text = ''
+        return text
+
+    def calculate_running_time(self):
+        '''
+        モジュール内容を実行するのにかかる時間を計算する
+        '''
+        start = time.time()
+
+        # 処理開始
+        self.run_output_script()
+        # 処理終了
+
+        elapsed_time = time.time() - start
+
+        print_text = "elapsed_time: {0} [sec]".format(elapsed_time)
+        print(self.module_name)
+        print(print_text)
+        print("=" * 50)
+
 
 class SettingTemp(Module):
     '''
@@ -45,6 +69,7 @@ class SettingTemp(Module):
     * レコメンド用設定温度 <- これを示すことにおいては難しい機械学習は必要なさそう...
 
     '''
+    module_name = "SettingTemp"
     min_temp = 18
     max_temp = 30
     horizontal_axis_range = range(min_temp, max_temp + 1)
@@ -64,15 +89,15 @@ class SettingTemp(Module):
             count_list[row.set_temperature - self.min_temp] += 1
         return [int((_ / sum(count_list) * 100)) for _ in count_list]
 
-    def _find_frequent_set_temperature(self):
+    # 以下アプリケーション用メソッド
+    def find_frequent_set_temperature(self):
         '''
-        データ解析部分
         1番頻繁に利用していた設定温度を返すメソッド
         '''
         frequent_list = self._make_frequent_list()
         return frequent_list.index(max(frequent_list)) + self.min_temp
 
-    def _show_recommend_set_temperature(self, season="summer"):
+    def show_recommend_set_temperature(self, season="summer"):
         '''
         返す値部分
         設定を促すレコメンド設定温度を返すメソッド
@@ -84,7 +109,7 @@ class SettingTemp(Module):
 
         self._set_virtical_axis_values()
 
-        frequent_set_temp = self._find_frequent_set_temperature()
+        frequent_set_temp = self.find_frequent_set_temperature()
         if season == "summer":
             if 18 <= frequent_set_temp <= 28:
                 return min(frequent_set_temp + 2, 28)
@@ -100,6 +125,16 @@ class SettingTemp(Module):
             else:
                 return frequent_set_temp
 
+    # 以下出力メソッド
+    def run_output_script(self):
+        frequent_set_temp = self.find_frequent_set_temperature()
+        recommend_set_temp = self.show_recommend_set_temperature()
+        frequent_set_temp_text = "頻繁設定温度は{0}℃".format(frequent_set_temp)
+        recommend_set_temp_text = "推奨設定温度は{0}℃".format(recommend_set_temp)
+        text = "{0}\n{1}".format(frequent_set_temp_text,
+                                 recommend_set_temp_text)
+        return text
+
 
 class ReduceUsage(Module):
     '''
@@ -112,8 +147,8 @@ class ReduceUsage(Module):
     返り値データ形式
     * グラフ用データ
     * レコメンド用 エアコン削減可能曜日・その時間
-
     '''
+    module_name = "ReduceUsage"
 
     def _set_horizontal_axis_values(self, duration="weekly"):
         if duration == "weekly":
@@ -185,7 +220,7 @@ class ReduceUsage(Module):
 
         return ret_list
 
-    # 以下アプリケーションメソッド
+    # 以下アプリケーション用メソッド
     def find_the_rank_weekday(self, rank=1, lang='ja'):
         '''
         指定のランクの曜日を返す
@@ -194,6 +229,18 @@ class ReduceUsage(Module):
         weekday_rank_list = utils.make_ranking_index(virtical_axis)
         return utils.convert_num_to_weekday(\
             weekday_rank_list[rank-1], lang=lang)
+
+    # 以下出力メソッド
+    def run_output_script(self):
+        top1_rank_weekday = self.find_the_rank_weekday(rank=1)
+        top2_rank_weekday = self.find_the_rank_weekday(rank=2)
+        top1_weekday_text = \
+            "1番目に多く利用している曜日は{0}曜日".format(top1_rank_weekday)
+        top2_weekday_text = \
+            "2番目に多く利用している曜日は{0}曜日".format(top2_rank_weekday)
+        text = "{0}\n{1}".format(top1_weekday_text,
+                                 top2_weekday_text)
+        return text
 
 
 class ChangeUsage(Module):
@@ -209,6 +256,7 @@ class ChangeUsage(Module):
     * レコメンド用 エアコン削減可能曜日・その時間
 
     '''
+    module_name = "ChangeUsage"
 
     # define specification of this graph
     horizontal_axis = [str(_) + ":00" for _ in range(24)]
@@ -220,7 +268,7 @@ class ChangeUsage(Module):
         """
         1週間分における時間当たりの使用率のリストを返す 単位は%
         # Return Example
-        return [90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2, 
+        return [90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2,
                 90, 19, 13, 32, 2, 12, 50, 90, 19, 13, 32, 2]
         """
         count_list = [0] * len(self.horizontal_axis)
@@ -252,6 +300,7 @@ class ChangeUsage(Module):
 
         return [int(((_ / 7) * 100)) for _ in count_list]
 
+    # 以下アプリケーション用メソッド
     def find_a_certain_hour_value(self, index=14):
         """
         ある時台の利用率を返すメソッド
@@ -259,3 +308,13 @@ class ChangeUsage(Module):
         """
         virtical_axis = self._make_hourly_usage_frequent_list()
         return virtical_axis[index]
+
+    # 以下出力メソッド
+    def run_output_script(self):
+        value_hour14 = self.find_a_certain_hour_value(index=14)
+        value_hour17 = self.find_a_certain_hour_value(index=17)
+        hour14_text = "14時台の利用率は{0}%".format(value_14hour)
+        hour17_text = "17時台の利用率は{0}%".format(value_17hour)
+        text = "{0}\n{1}".format(hour14_text,
+                                 hour17_text)
+        return text
