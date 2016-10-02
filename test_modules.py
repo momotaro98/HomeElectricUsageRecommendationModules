@@ -4,7 +4,7 @@ import unittest
 import csv
 from datetime import datetime as dt
 
-from home_electric_usage_recommendation_modules.modules \
+from home_electric_usage_recommendation_modules \
     import (SettingTemp, ReduceUsage, ChangeUsage)
 
 
@@ -63,7 +63,7 @@ class SettingTempModuleTestCase(unittest.TestCase):
         _show_recommend_set_temperature()メソッドをテスト
         '''
         st = SettingTemp(self.input_rows)
-        recommend_set_temp = st._show_recommend_set_temperature()
+        recommend_set_temp = st.show_recommend_set_temperature()
         self.assertEqual(recommend_set_temp, 27)
 
 
