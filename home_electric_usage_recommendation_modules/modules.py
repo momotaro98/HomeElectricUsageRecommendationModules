@@ -313,8 +313,8 @@ class ChangeUsage(Module):
     def run_output_script(self):
         value_hour14 = self.find_a_certain_hour_value(index=14)
         value_hour17 = self.find_a_certain_hour_value(index=17)
-        hour14_text = "14時台の利用率は{0}%".format(value_14hour)
-        hour17_text = "17時台の利用率は{0}%".format(value_17hour)
+        hour14_text = "14時台の利用率は{0}%".format(value_hour14)
+        hour17_text = "17時台の利用率は{0}%".format(value_hour17)
         text = "{0}\n{1}".format(hour14_text,
                                  hour17_text)
         return text

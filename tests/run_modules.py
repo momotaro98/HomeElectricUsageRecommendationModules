@@ -31,5 +31,5 @@ if __name__ == "__main__":
     du.calculate_running_time()
 
     # ChangeUsage
-    cu = ReduceUsage(input_rows)
+    cu = ChangeUsage(input_rows)
     cu.calculate_running_time()
